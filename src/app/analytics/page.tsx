@@ -18,6 +18,12 @@ const YEARS = Array.from({ length: 5 }, (_, i) => {
   return { value: String(y), label: String(y) }
 })
 
+const CARD_STYLE = {
+  backgroundColor: '#FAF8F5',
+  border: '1px solid #E8E0D5',
+  boxShadow: '0 1px 3px rgba(26,26,26,0.05)',
+}
+
 const tooltipStyle = {
   background: '#FAF8F5',
   border: '1px solid #E8E0D5',
@@ -25,12 +31,6 @@ const tooltipStyle = {
   color: '#1A1A1A',
   fontSize: '12px',
   boxShadow: '0 4px 16px rgba(26,26,26,0.08)',
-}
-
-const CARD_STYLE = {
-  backgroundColor: '#FAF8F5',
-  border: '1px solid #E8E0D5',
-  boxShadow: '0 1px 3px rgba(26,26,26,0.05)',
 }
 
 export default function AnalyticsPage() {
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
       acc[key].value += t.amount
       return acc
     }, {})
-  const pieData = Object.values(byCat).sort((a, b) => b.value - a.value)
+  const pieData  = Object.values(byCat).sort((a, b) => b.value - a.value)
   const pieTotal = pieData.reduce((s, d) => s + d.value, 0)
 
   // Daily bar chart
@@ -77,58 +77,50 @@ export default function AnalyticsPage() {
 
   return (
     <AppLayout title="Analytics" subtitle="Detailed financial insights">
+
       {/* Period selector */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-36">
+      <div className="flex items-center gap-2.5 mb-5">
+        <div style={{ width: '140px' }}>
           <Select options={MONTHS} value={String(month)} onChange={e => setMonth(Number(e.target.value))} />
         </div>
-        <div className="w-24">
+        <div style={{ width: '88px' }}>
           <Select options={YEARS} value={String(year)} onChange={e => setYear(Number(e.target.value))} />
         </div>
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-3 mb-5">
         {kpis.map(k => (
-          <div key={k.label} className="rounded-2xl px-5 py-4" style={CARD_STYLE}>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: k.bg }}>
+          <div key={k.label} className="min-w-0 rounded-2xl px-4 py-4" style={CARD_STYLE}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5" style={{ backgroundColor: k.bg }}>
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: k.color }} />
             </div>
-            <p className="text-xs font-medium mb-1" style={{ color: '#9B928B' }}>{k.label}</p>
-            <p className="text-xl font-bold" style={{ color: k.color }}>{k.value}</p>
+            <p className="text-[11.5px] font-medium mb-1 truncate" style={{ color: '#9B928B' }}>{k.label}</p>
+            <p className="text-[17px] font-bold truncate" style={{ color: k.color }}>{k.value}</p>
           </div>
         ))}
       </div>
 
       {/* Daily spend chart */}
       <div className="rounded-2xl p-5 mb-4" style={CARD_STYLE}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: '#1A1A1A' }}>
-          Daily Transactions — {getMonthName(month)} {year}
-        </h3>
-        <div className="flex items-center gap-4 text-[11px] mb-4">
-          <span className="flex items-center gap-1.5" style={{ color: '#6B6560' }}>
-            <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: '#5BA68A' }} /> Income
-          </span>
-          <span className="flex items-center gap-1.5" style={{ color: '#6B6560' }}>
-            <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: '#D96B6B' }} /> Expenses
-          </span>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[13.5px] font-semibold" style={{ color: '#1A1A1A' }}>
+            Daily Transactions — {getMonthName(month)} {year}
+          </h3>
+          <div className="flex items-center gap-4 text-[11px]">
+            <span className="flex items-center gap-1.5" style={{ color: '#6B6560' }}>
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#5BA68A' }} /> Income
+            </span>
+            <span className="flex items-center gap-1.5" style={{ color: '#6B6560' }}>
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#D96B6B' }} /> Expenses
+            </span>
+          </div>
         </div>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={barData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barSize={7} barGap={2}>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={barData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }} barSize={6} barGap={2}>
             <CartesianGrid strokeDasharray="3 3" stroke="#E8E0D5" vertical={false} />
-            <XAxis
-              dataKey="day"
-              tick={{ fill: '#9B928B', fontSize: 10 }}
-              axisLine={false}
-              tickLine={false}
-              interval={4}
-            />
-            <YAxis
-              tick={{ fill: '#9B928B', fontSize: 10 }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={v => `$${v}`}
-            />
+            <XAxis dataKey="day" tick={{ fill: '#9B928B', fontSize: 10 }} axisLine={false} tickLine={false} interval={4} />
+            <YAxis tick={{ fill: '#9B928B', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
             <Tooltip
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(v: any, name: any) => [
@@ -138,28 +130,28 @@ export default function AnalyticsPage() {
               contentStyle={tooltipStyle}
               labelStyle={{ color: '#6B6560', fontWeight: 500 }}
             />
-            <Bar dataKey="income"  fill="#5BA68A" radius={[4, 4, 0, 0]} fillOpacity={0.85} />
-            <Bar dataKey="expense" fill="#D96B6B" radius={[4, 4, 0, 0]} fillOpacity={0.85} />
+            <Bar dataKey="income"  fill="#5BA68A" radius={[3, 3, 0, 0]} fillOpacity={0.85} />
+            <Bar dataKey="expense" fill="#D96B6B" radius={[3, 3, 0, 0]} fillOpacity={0.85} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Category pie */}
+      {/* Category breakdown */}
       <div className="rounded-2xl p-5" style={CARD_STYLE}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: '#1A1A1A' }}>Expenses by Category</h3>
+        <h3 className="text-[13.5px] font-semibold mb-4" style={{ color: '#1A1A1A' }}>Expenses by Category</h3>
         {pieData.length === 0 ? (
-          <p className="text-center text-sm py-8" style={{ color: '#9B928B' }}>No expense data for this period</p>
+          <p className="text-center text-[13px] py-8" style={{ color: '#9B928B' }}>No expense data for this period</p>
         ) : (
-          <div className="flex items-center gap-8">
-            <div className="w-44 h-44 flex-shrink-0">
+          <div className="flex items-center gap-6">
+            <div className="flex-shrink-0" style={{ width: '160px', height: '160px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={48}
-                    outerRadius={76}
+                    innerRadius={44}
+                    outerRadius={72}
                     paddingAngle={3}
                     dataKey="value"
                   >
@@ -176,28 +168,22 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="flex-1 space-y-3">
-              {pieData.map(item => {
+            <div className="flex-1 min-w-0 space-y-2.5">
+              {pieData.slice(0, 7).map(item => {
                 const pct = ((item.value / pieTotal) * 100).toFixed(1)
                 return (
-                  <div key={item.name} className="flex items-center gap-3">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ background: item.color }}
-                    />
+                  <div key={item.name} className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-medium truncate" style={{ color: '#1A1A1A' }}>{item.name}</span>
-                        <span className="text-xs font-semibold ml-2" style={{ color: '#1A1A1A' }}>{formatCurrency(item.value)}</span>
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className="text-[12px] font-medium truncate" style={{ color: '#1A1A1A' }}>{item.name}</span>
+                        <span className="text-[12px] font-semibold ml-2 flex-shrink-0" style={{ color: '#1A1A1A' }}>{formatCurrency(item.value)}</span>
                       </div>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#E8E0D5' }}>
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{ width: `${pct}%`, background: item.color }}
-                        />
+                      <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#E8E0D5' }}>
+                        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: item.color }} />
                       </div>
                     </div>
-                    <span className="text-[11px] w-9 text-right flex-shrink-0" style={{ color: '#9B928B' }}>{pct}%</span>
+                    <span className="text-[11px] w-8 text-right flex-shrink-0" style={{ color: '#9B928B' }}>{pct}%</span>
                   </div>
                 )
               })}

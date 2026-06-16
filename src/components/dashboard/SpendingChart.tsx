@@ -19,29 +19,24 @@ export function SpendingChart({ transactions }: SpendingChartProps) {
       return acc
     }, {})
 
-  const data = Object.values(byCategory).sort((a, b) => b.value - a.value)
+  const data  = Object.values(byCategory).sort((a, b) => b.value - a.value)
   const total = data.reduce((s, d) => s + d.value, 0)
 
   if (data.length === 0) {
     return (
-      <div
-        className="flex flex-col items-center justify-center h-48 gap-2"
-        style={{ color: '#9B928B' }}
-      >
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#F0EAE2' }}
-        >
+      <div className="flex flex-col items-center justify-center py-8 gap-2" style={{ color: '#9B928B' }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#F0EAE2' }}>
           <span className="text-lg">💸</span>
         </div>
-        <p className="text-sm">No expense data yet</p>
+        <p className="text-[12px]">No expense data yet</p>
       </div>
     )
   }
 
   return (
-    <div className="flex items-center gap-5">
-      <div className="w-36 h-36 flex-shrink-0">
+    <div className="flex flex-col gap-3 min-w-0">
+      {/* Donut — fills the column width */}
+      <div style={{ width: '100%', height: '140px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -49,7 +44,7 @@ export function SpendingChart({ transactions }: SpendingChartProps) {
               cx="50%"
               cy="50%"
               innerRadius={36}
-              outerRadius={60}
+              outerRadius={58}
               paddingAngle={3}
               dataKey="value"
             >
@@ -72,18 +67,14 @@ export function SpendingChart({ transactions }: SpendingChartProps) {
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex-1 space-y-2 min-w-0">
-        {data.slice(0, 5).map((item) => (
-          <div key={item.name} className="flex items-center gap-2">
-            <div
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ background: item.color }}
-            />
-            <span className="text-xs flex-1 truncate" style={{ color: '#6B6560' }}>{item.name}</span>
-            <span className="text-xs font-semibold" style={{ color: '#1A1A1A' }}>
-              {formatCurrency(item.value)}
-            </span>
-            <span className="text-[10px] w-7 text-right" style={{ color: '#9B928B' }}>
+
+      {/* Legend — stacked below, truncates properly */}
+      <div className="space-y-1.5 min-w-0">
+        {data.slice(0, 4).map(item => (
+          <div key={item.name} className="flex items-center gap-2 min-w-0">
+            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+            <span className="text-[11px] flex-1 truncate min-w-0" style={{ color: '#6B6560' }}>{item.name}</span>
+            <span className="text-[11px] font-semibold flex-shrink-0" style={{ color: '#1A1A1A' }}>
               {((item.value / total) * 100).toFixed(0)}%
             </span>
           </div>

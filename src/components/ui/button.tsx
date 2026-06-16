@@ -10,38 +10,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading, children, disabled, style, ...props }, ref) => {
-    const base =
-      'inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-150 ' +
+    const base = 'inline-flex items-center justify-center gap-1.5 font-medium rounded-xl transition-all duration-150 ' +
       'disabled:opacity-50 disabled:cursor-not-allowed select-none focus-visible:outline-none ' +
-      'focus-visible:ring-2 focus-visible:ring-offset-1'
+      'focus-visible:ring-2 focus-visible:ring-offset-1 whitespace-nowrap'
 
-    // Variant styles using inline style for custom palette colors
     const variantStyles: Record<string, React.CSSProperties> = {
-      primary: {
-        backgroundColor: '#E8B4B8',
-        color: '#1A1A1A',
-        boxShadow: '0 1px 2px rgba(232,180,184,0.3)',
-      },
-      secondary: {
-        backgroundColor: '#FAF8F5',
-        color: '#1A1A1A',
-        border: '1px solid #E8E0D5',
-        boxShadow: '0 1px 2px rgba(26,26,26,0.04)',
-      },
-      ghost: {
-        backgroundColor: 'transparent',
-        color: '#6B6560',
-      },
-      danger: {
-        backgroundColor: '#FBF0F0',
-        color: '#D96B6B',
-        border: '1px solid #F5CECE',
-      },
-      outline: {
-        backgroundColor: 'transparent',
-        color: '#6B6560',
-        border: '1px solid #E8E0D5',
-      },
+      primary:   { backgroundColor: '#E8B4B8', color: '#1A1A1A', boxShadow: '0 1px 2px rgba(232,180,184,0.25)' },
+      secondary: { backgroundColor: '#FAF8F5', color: '#1A1A1A', border: '1px solid #E8E0D5', boxShadow: '0 1px 2px rgba(26,26,26,0.04)' },
+      ghost:     { backgroundColor: 'transparent', color: '#6B6560' },
+      danger:    { backgroundColor: '#FBF0F0', color: '#D96B6B', border: '1px solid #F5CECE' },
+      outline:   { backgroundColor: 'transparent', color: '#6B6560', border: '1px solid #E8E0D5' },
     }
 
     const variantClasses: Record<string, string> = {
@@ -52,10 +30,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       outline:   'hover:bg-[#F0EAE2] active:bg-[#E8E0D5] focus-visible:ring-[#E8E0D5]',
     }
 
-    const sizes = {
-      sm: 'text-xs h-8 px-3.5 py-0',
-      md: 'text-sm h-9 px-4 py-0',
-      lg: 'text-sm h-10 px-5 py-0',
+    const sizes: Record<string, string> = {
+      sm: 'text-[12px] h-8 px-3.5',
+      md: 'text-[13.5px] h-9 px-4',
+      lg: 'text-[14px] h-10 px-5',
     }
 
     return (
@@ -77,6 +55,5 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     )
   }
 )
-
 Button.displayName = 'Button'
 export { Button }

@@ -37,7 +37,7 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
   return (
     <>
       <div
-        className="rounded-2xl p-5 transition-shadow hover:shadow-md"
+        className="rounded-2xl p-5 transition-all hover:shadow-md"
         style={{
           backgroundColor: '#FAF8F5',
           border: `1px solid ${borderColor}`,
@@ -48,7 +48,7 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ background: cat?.color ? `${cat.color}18` : '#F0EAE2' }}
             >
               {isOver ? (
@@ -60,8 +60,8 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
               )}
             </div>
             <div>
-              <p className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>{cat?.name ?? 'Budget'}</p>
-              <p className="text-xs mt-0.5" style={{ color: '#9B928B' }}>
+              <p className="text-[14px] font-semibold" style={{ color: '#1A1A1A' }}>{cat?.name ?? 'Budget'}</p>
+              <p className="text-[12px] mt-0.5" style={{ color: '#9B928B' }}>
                 {formatCurrency(spent)} spent of {formatCurrency(budget.amount)}
               </p>
             </div>
@@ -105,18 +105,18 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
 
         {/* Progress bar */}
         <div className="space-y-2">
-          <div className="progress-bar h-2">
+          <div className="progress-bar h-[6px]">
             <div
-              className="progress-fill h-2"
+              className="progress-fill h-[6px]"
               style={{ width: `${pct}%`, background: barColor }}
             />
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs font-medium" style={{ color: barColor }}>
+            <span className="text-[12px] font-medium" style={{ color: barColor }}>
               {pct.toFixed(0)}% used
             </span>
             <span
-              className="text-xs"
+              className="text-[12px]"
               style={{ color: remaining < 0 ? '#D96B6B' : '#9B928B', fontWeight: remaining < 0 ? 500 : 400 }}
             >
               {remaining < 0

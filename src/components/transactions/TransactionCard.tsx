@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Modal } from '@/components/ui/modal'
 import { TransactionForm } from './TransactionForm'
 import type { Transaction } from '@/lib/supabase/types'
-import { Pencil, Trash2, TrendingUp, TrendingDown, FileText, Paperclip, FileIcon, Image } from 'lucide-react'
+import { Pencil, Trash2, TrendingUp, TrendingDown, Paperclip, ImageIcon } from 'lucide-react'
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -14,17 +14,14 @@ interface TransactionCardProps {
 }
 
 export function TransactionCard({ transaction, onUpdate, onDelete }: TransactionCardProps) {
-  const [editOpen, setEditOpen] = useState(false)
+  const [editOpen,   setEditOpen]   = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const [deleting,   setDeleting]   = useState(false)
 
-  const isIncome = transaction.type === 'income'
-  const cat = transaction.categories
-  const hasAttachment = !!transaction.attachment_url
-  const isImageAttachment = transaction.attachment_type?.startsWith('image/')
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const AttachIcon = isImageAttachment ? Image : FileIcon
+  const isIncome        = transaction.type === 'income'
+  const cat             = transaction.categories
+  const hasAttachment   = !!transaction.attachment_url
+  const isImageAttach   = transaction.attachment_type?.startsWith('image/')
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -36,14 +33,14 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
   return (
     <>
       <div
-        className="flex items-center gap-4 px-5 py-4 transition-colors group cursor-default"
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F5F0E8' }}
+        className="flex items-center gap-4 px-5 py-[14px] transition-colors group cursor-default"
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F8F4EF' }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent' }}
       >
-        {/* Category icon */}
+        {/* Icon */}
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: cat?.color ? `${cat.color}18` : '#F0EAE2' }}
+          style={{ backgroundColor: cat?.color ? `${cat.color}18` : (isIncome ? '#EBF5F1' : '#FBF0F0') }}
         >
           {isIncome
             ? <TrendingUp  size={15} style={{ color: cat?.color ?? '#5BA68A' }} />
@@ -51,28 +48,25 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
           }
         </div>
 
-        {/* Description + meta */}
+        {/* Description & meta */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate" style={{ color: '#1A1A1A' }}>
+          <p className="text-[13.5px] font-medium truncate leading-snug" style={{ color: '#1A1A1A' }}>
             {transaction.description || 'Untitled'}
           </p>
-          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+          <div className="flex items-center gap-2 mt-[3px] flex-wrap">
             <span className="text-[11px]" style={{ color: '#9B928B' }}>{formatDate(transaction.date)}</span>
-            {cat && <Badge color={cat.color} className="text-[10px]">{cat.name}</Badge>}
-            {transaction.notes && (
-              <FileText size={11} style={{ color: '#D4C8BC' }} />
-            )}
+            {cat && <Badge color={cat.color}>{cat.name}</Badge>}
             {hasAttachment && (
               <a
                 href={transaction.attachment_url!}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={e => e.stopPropagation()}
-                className="flex items-center gap-1 text-[10px] transition-colors"
+                className="flex items-center gap-1 text-[11px] transition-colors"
                 style={{ color: '#C4787C' }}
                 title={transaction.attachment_name ?? 'Attachment'}
               >
-                <Paperclip size={10} />
+                {isImageAttach ? <ImageIcon size={11} /> : <Paperclip size={11} />}
                 <span className="max-w-[80px] truncate">{transaction.attachment_name}</span>
               </a>
             )}
@@ -80,7 +74,7 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
         </div>
 
         {/* Image thumbnail */}
-        {isImageAttachment && transaction.attachment_url && (
+        {isImageAttach && transaction.attachment_url && (
           <a
             href={transaction.attachment_url}
             target="_blank"
@@ -92,27 +86,24 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
             <img
               src={transaction.attachment_url}
               alt={transaction.attachment_name ?? ''}
-              className="w-8 h-8 rounded-lg object-cover transition-all"
+              className="w-9 h-9 rounded-lg object-cover"
               style={{ border: '1px solid #E8E0D5' }}
             />
           </a>
         )}
 
         {/* Amount */}
-        <div className="text-right flex-shrink-0">
-          <p
-            className="text-sm font-semibold"
-            style={{ color: isIncome ? '#5BA68A' : '#D96B6B' }}
-          >
+        <div className="text-right flex-shrink-0 min-w-[80px]">
+          <p className="text-[14px] font-semibold" style={{ color: isIncome ? '#5BA68A' : '#D96B6B' }}>
             {isIncome ? '+' : '−'}{formatCurrency(transaction.amount)}
           </p>
         </div>
 
-        {/* Actions (show on hover) */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        {/* Actions */}
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
           <button
             onClick={() => setEditOpen(true)}
-            className="p-1.5 rounded-lg transition-all"
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
             style={{ color: '#9B928B' }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLElement).style.backgroundColor = '#F0EAE2'
@@ -124,11 +115,11 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
             }}
             title="Edit"
           >
-            <Pencil size={14} />
+            <Pencil size={13} />
           </button>
           <button
             onClick={() => setDeleteOpen(true)}
-            className="p-1.5 rounded-lg transition-all"
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
             style={{ color: '#9B928B' }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLElement).style.backgroundColor = '#FBF0F0'
@@ -140,37 +131,32 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
             }}
             title="Delete"
           >
-            <Trash2 size={14} />
+            <Trash2 size={13} />
           </button>
         </div>
       </div>
 
-      {/* Edit modal */}
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Transaction">
         <TransactionForm
           initial={transaction}
-          onSubmit={async (data) => {
-            await onUpdate(transaction.id, data)
-            setEditOpen(false)
-          }}
+          onSubmit={async (data) => { await onUpdate(transaction.id, data); setEditOpen(false) }}
           onCancel={() => setEditOpen(false)}
         />
       </Modal>
 
-      {/* Delete confirmation */}
       <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Delete Transaction" size="sm">
         <div className="space-y-5">
-          <p className="text-sm" style={{ color: '#6B6560' }}>
-            Are you sure you want to delete{' '}
+          <p className="text-[13.5px] leading-relaxed" style={{ color: '#6B6560' }}>
+            Delete{' '}
             <span className="font-semibold" style={{ color: '#1A1A1A' }}>
               {transaction.description || 'this transaction'}
             </span>
-            ? This action cannot be undone.
+            ? This cannot be undone.
           </p>
           <div className="flex gap-3">
             <button
               onClick={() => setDeleteOpen(false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              className="flex-1 h-9 rounded-xl text-[13.5px] font-medium transition-all"
               style={{ border: '1px solid #E8E0D5', color: '#6B6560', backgroundColor: '#FAF8F5' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F0EAE2' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FAF8F5' }}
@@ -180,7 +166,7 @@ export function TransactionCard({ transaction, onUpdate, onDelete }: Transaction
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+              className="flex-1 h-9 rounded-xl text-[13.5px] font-medium transition-all disabled:opacity-50"
               style={{ backgroundColor: '#FBF0F0', border: '1px solid #F5CECE', color: '#D96B6B' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F5DADA' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FBF0F0' }}

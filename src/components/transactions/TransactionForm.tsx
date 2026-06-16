@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { detectCategoryFromKeywords } from '@/lib/categorize'
 import type { AutoCategorySource } from '@/lib/categorize'
 import type { Transaction } from '@/lib/supabase/types'
-import { TrendingUp, TrendingDown, Sparkles, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, Sparkles, Loader2, AlertCircle } from 'lucide-react'
 
 interface TransactionFormProps {
   initial?: Partial<Transaction>
@@ -180,52 +180,92 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Type toggle */}
-      <div className="flex gap-2 p-1 rounded-xl" style={{ backgroundColor: '#F0EAE2' }}>
+      {/* ── Type toggle ─────────────────────────────────────── */}
+      <div
+        className="flex gap-1.5 p-1.5 rounded-2xl"
+        style={{ backgroundColor: '#F0EAE2' }}
+      >
         {(['expense', 'income'] as const).map(t => (
           <button
             key={t}
             type="button"
             onClick={() => setType(t)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all`}
-            style={
-              type === t
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl text-[13.5px] font-semibold transition-all duration-150"
+            style={{
+              padding: '11px 0',
+              ...(type === t
                 ? t === 'expense'
-                  ? { backgroundColor: '#FAF8F5', color: '#D96B6B', border: '1px solid #F5CECE', boxShadow: '0 1px 2px rgba(26,26,26,0.06)' }
-                  : { backgroundColor: '#FAF8F5', color: '#5BA68A', border: '1px solid #C8E8DC', boxShadow: '0 1px 2px rgba(26,26,26,0.06)' }
-                : { color: '#9B928B' }
-            }
+                  ? { backgroundColor: '#F7E8E9', color: '#D96B6B', border: '1px solid #F5CECE', boxShadow: '0 1px 3px rgba(26,26,26,0.06)' }
+                  : { backgroundColor: '#EBF5F1', color: '#5BA68A', border: '1px solid #C8E8DC', boxShadow: '0 1px 3px rgba(26,26,26,0.06)' }
+                : { backgroundColor: '#FAF8F5', color: '#9B928B', border: '1px solid transparent' }
+              )
+            }}
           >
-            {t === 'expense' ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === 'expense'
+              ? <TrendingDown size={15} />
+              : <TrendingUp size={15} />
+            }
+            {t === 'expense' ? 'Expense' : 'Income'}
           </button>
         ))}
       </div>
 
-      {/* Amount */}
-      <Input
-        label="Amount"
-        type="number"
-        step="0.01"
-        min="0"
-        placeholder="0.00"
-        prefix={<span className="text-sm font-medium text-slate-500">$</span>}
-        value={form.amount}
-        onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-        error={errors.amount}
-      />
+      {/* ── Amount ─────────────────────────────────────────── */}
+      <div>
+        <label className="block text-[13px] font-medium mb-[6px]" style={{ color: '#1A1A1A' }}>
+          Amount <span style={{ color: '#D96B6B' }}>*</span>
+        </label>
+        <div
+          className="flex items-center rounded-xl transition-all"
+          style={{
+            backgroundColor: '#FAF8F5',
+            border: `1.5px solid ${errors.amount ? '#D96B6B' : '#E8E0D5'}`,
+          }}
+        >
+          <span className="pl-4 text-[16px] font-medium flex-shrink-0" style={{ color: '#9B928B' }}>$</span>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            value={form.amount}
+            onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+            className="flex-1 text-[20px] font-semibold px-2 py-3 focus:outline-none bg-transparent min-w-0"
+            style={{ color: '#1A1A1A' }}
+            onFocus={e => {
+              const parent = e.currentTarget.parentElement!
+              parent.style.borderColor = errors.amount ? '#D96B6B' : '#E8B4B8'
+              parent.style.boxShadow = errors.amount ? '0 0 0 3px rgba(217,107,107,0.12)' : '0 0 0 3px rgba(232,180,184,0.18)'
+            }}
+            onBlur={e => {
+              const parent = e.currentTarget.parentElement!
+              parent.style.borderColor = errors.amount ? '#D96B6B' : '#E8E0D5'
+              parent.style.boxShadow = 'none'
+            }}
+          />
+          {type === 'expense'
+            ? <span className="pr-4 text-[12px] font-medium flex-shrink-0" style={{ color: '#D96B6B' }}>EXP</span>
+            : <span className="pr-4 text-[12px] font-medium flex-shrink-0" style={{ color: '#5BA68A' }}>INC</span>
+          }
+        </div>
+        {errors.amount && (
+          <p className="flex items-center gap-1 mt-[6px] text-[11px]" style={{ color: '#D96B6B' }}>
+            <AlertCircle size={11} />
+            {errors.amount}
+          </p>
+        )}
+      </div>
 
-      {/* Description — typing here triggers auto-categorization */}
+      {/* ── Description ─────────────────────────────────────── */}
       <Input
         label="Description"
-        placeholder="What was this for?"
+        placeholder="What was this for? (e.g. Grocery Shopping)"
         value={form.description}
         onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
       />
 
-      {/* Category & Date — category gets helper text when auto-detected */}
-      <div className="grid grid-cols-2 gap-4 items-start">
-        {/* Category wrapper lets us add the helper text below */}
+      {/* ── Category + Date ─────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <Select
             label="Category"
@@ -234,28 +274,23 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
             value={form.category_id}
             onChange={handleCategoryChange}
           />
-
-          {/* Auto-detect helper text */}
+          {/* AI hint */}
           {showHelperText && (
-            <div className="flex items-center gap-1.5 mt-1.5 min-h-[16px]">
+            <div className="flex items-center gap-1.5 mt-[6px]">
               {aiLoading ? (
                 <>
-                  <Loader2 size={11} className="text-indigo-400 shrink-0 animate-spin" />
-                  <span className="text-[11px] text-slate-400">Detecting category…</span>
+                  <Loader2 size={10} className="animate-spin flex-shrink-0" style={{ color: '#9B928B' }} />
+                  <span className="text-[11px]" style={{ color: '#9B928B' }}>Detecting…</span>
                 </>
               ) : autoSource === 'ai' ? (
                 <>
-                  <Sparkles size={11} className="shrink-0" style={{ color: '#C4787C' }} />
-                  <span className="text-[11px]" style={{ color: '#C4787C' }}>
-                    Category auto-selected by AI based on description.
-                  </span>
+                  <Sparkles size={10} className="flex-shrink-0" style={{ color: '#C4787C' }} />
+                  <span className="text-[11px]" style={{ color: '#C4787C' }}>AI auto-selected</span>
                 </>
               ) : (
                 <>
-                  <Sparkles size={11} className="shrink-0" style={{ color: '#5BA68A' }} />
-                  <span className="text-[11px]" style={{ color: '#6B6560' }}>
-                    Category auto-selected based on description.
-                  </span>
+                  <Sparkles size={10} className="flex-shrink-0" style={{ color: '#5BA68A' }} />
+                  <span className="text-[11px]" style={{ color: '#6B6560' }}>Auto-selected from keywords</span>
                 </>
               )}
             </div>
@@ -271,16 +306,18 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
         />
       </div>
 
-      {/* Notes */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium leading-none" style={{ color: '#1A1A1A' }}>Notes</label>
+      {/* ── Notes ───────────────────────────────────────────── */}
+      <div className="flex flex-col gap-[6px]">
+        <label className="text-[13px] font-medium" style={{ color: '#1A1A1A' }}>
+          Notes <span className="font-normal" style={{ color: '#9B928B' }}>(Optional)</span>
+        </label>
         <textarea
-          placeholder="Additional notes…"
+          placeholder="Add any notes or memo…"
           value={form.notes}
           onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
           rows={2}
-          className="w-full rounded-xl text-sm px-3.5 py-2.5 focus:outline-none transition-all resize-none"
-          style={{ backgroundColor: '#FAF8F5', border: '1px solid #E8E0D5', color: '#1A1A1A' }}
+          className="w-full rounded-xl text-[13.5px] px-3.5 py-2.5 focus:outline-none transition-all resize-none"
+          style={{ backgroundColor: '#FAF8F5', border: '1.5px solid #E8E0D5', color: '#1A1A1A', lineHeight: '1.5' }}
           onFocus={e => {
             e.currentTarget.style.borderColor = '#E8B4B8'
             e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,180,184,0.18)'
@@ -292,11 +329,11 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
         />
       </div>
 
-      {/* Attachment */}
+      {/* ── Attachment ──────────────────────────────────────── */}
       <FileUpload value={attachment} onChange={setAttachment} />
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-1">
+      {/* ── Actions ─────────────────────────────────────────── */}
+      <div className="flex gap-3 pt-2">
         <Button type="button" variant="secondary" className="flex-1" onClick={onCancel}>
           Cancel
         </Button>

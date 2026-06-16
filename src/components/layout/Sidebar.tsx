@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -24,32 +23,50 @@ export function Sidebar() {
 
   return (
     <aside
-      className="w-60 flex-shrink-0 flex flex-col h-full"
-      style={{ backgroundColor: '#FAF8F5', borderRight: '1px solid #E8E0D5', color: '#1A1A1A' }}
+      className="w-[220px] flex-shrink-0 flex flex-col h-full"
+      style={{ backgroundColor: '#FAF8F5', borderRight: '1px solid #E8E0D5' }}
     >
       {/* Logo */}
-      <div className="px-5 py-5" style={{ borderBottom: '1px solid #E8E0D5' }}>
+      <div className="px-5 py-[18px]" style={{ borderBottom: '1px solid #E8E0D5' }}>
         <div className="flex items-center gap-3">
           <div
-            className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #E8B4B8 0%, #D9A0A4 100%)' }}
+            className="flex items-center justify-center flex-shrink-0"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #E8B4B8 0%, #C4787C 100%)',
+            }}
           >
             <Sparkles size={16} style={{ color: '#FAF8F5' }} />
           </div>
           <div>
-            <p className="text-sm font-bold leading-none" style={{ color: '#1A1A1A' }}>BudgetAI</p>
-            <p className="text-[11px] mt-0.5" style={{ color: '#9B928B' }}>Smart Finance</p>
+            <p
+              className="leading-none"
+              style={{ fontWeight: 600, fontSize: '15px', color: '#1A1A1A' }}
+            >
+              BudgetAI
+            </p>
+            <p className="mt-0.5" style={{ fontSize: '11px', color: '#9B928B' }}>
+              Smart Finance
+            </p>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+      <nav className="flex-1 px-3 pt-6 pb-4 overflow-y-auto">
         <p
-          className="px-3 mb-2.5 text-[10px] font-semibold uppercase tracking-widest"
-          style={{ color: '#9B928B' }}
+          className="px-3 mb-3"
+          style={{
+            fontSize: '10px',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: '#9B928B',
+            textTransform: 'uppercase',
+          }}
         >
-          Main Menu
+          MENU
         </p>
         <div className="space-y-0.5">
           {nav.map(({ href, label, icon: Icon }) => {
@@ -58,30 +75,41 @@ export function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150'
-                )}
-                style={
-                  active
-                    ? { backgroundColor: '#F7E8E9', color: '#8B4A4E' }
-                    : { color: '#6B6560' }
-                }
+                className="flex items-center gap-3 rounded-xl transition-all duration-150"
+                style={{
+                  fontSize: '13.5px',
+                  fontWeight: 500,
+                  paddingTop: '9px',
+                  paddingBottom: '9px',
+                  paddingRight: '12px',
+                  paddingLeft: 'calc(12px - 3px)',
+                  borderLeft: active ? '3px solid #C4787C' : '3px solid transparent',
+                  backgroundColor: active ? '#F7E8E9' : 'transparent',
+                  color: active ? '#8B4A4E' : '#6B6560',
+                }}
                 onMouseEnter={e => {
                   if (!active) {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = '#F0EAE2'
-                    ;(e.currentTarget as HTMLElement).style.color = '#1A1A1A'
+                    const el = e.currentTarget as HTMLElement
+                    el.style.backgroundColor = '#F0EAE2'
+                    el.style.color = '#1A1A1A'
+                    const icon = el.querySelector('[data-nav-icon]') as HTMLElement | null
+                    if (icon) icon.style.color = '#6B6560'
                   }
                 }}
                 onMouseLeave={e => {
                   if (!active) {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
-                    ;(e.currentTarget as HTMLElement).style.color = '#6B6560'
+                    const el = e.currentTarget as HTMLElement
+                    el.style.backgroundColor = 'transparent'
+                    el.style.color = '#6B6560'
+                    const icon = el.querySelector('[data-nav-icon]') as HTMLElement | null
+                    if (icon) icon.style.color = '#9B928B'
                   }
                 }}
               >
                 <Icon
-                  size={17}
-                  style={{ color: active ? '#C4787C' : '#9B928B' }}
+                  data-nav-icon=""
+                  size={16}
+                  style={{ color: active ? '#C4787C' : '#9B928B', flexShrink: 0 }}
                 />
                 {label}
               </Link>
@@ -90,22 +118,21 @@ export function Sidebar() {
         </div>
       </nav>
 
-      {/* Bottom tip */}
+      {/* Pro Tip */}
       <div className="px-3 pb-4">
         <div
-          className="rounded-2xl p-4"
-          style={{ backgroundColor: '#F5F0E8', border: '1px solid #E8E0D5' }}
+          style={{
+            backgroundColor: '#F5F0E8',
+            border: '1px solid #E8E0D5',
+            borderRadius: '14px',
+            padding: '16px',
+          }}
         >
-          <div className="flex items-center gap-2 mb-1.5">
-            <div
-              className="w-5 h-5 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: '#F7E8E9' }}
-            >
-              <TrendingUp size={11} style={{ color: '#C4787C' }} />
-            </div>
-            <p className="text-xs font-semibold" style={{ color: '#1A1A1A' }}>Pro Tip</p>
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles size={13} style={{ color: '#C4787C', flexShrink: 0 }} />
+            <p style={{ fontSize: '12px', fontWeight: 600, color: '#1A1A1A' }}>Pro Tip</p>
           </div>
-          <p className="text-[11px] leading-relaxed" style={{ color: '#6B6560' }}>
+          <p style={{ fontSize: '11px', color: '#6B6560', lineHeight: '1.6' }}>
             Set budget alerts to stay on track with your financial goals.
           </p>
         </div>
