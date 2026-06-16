@@ -5,6 +5,7 @@ import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { FileUpload } from '@/components/ui/FileUpload'
 import { useCategories } from '@/hooks/useCategories'
+import { createClient } from '@/lib/supabase/client'
 import { detectCategoryFromKeywords } from '@/lib/categorize'
 import type { AutoCategorySource } from '@/lib/categorize'
 import type { Transaction } from '@/lib/supabase/types'
@@ -104,6 +105,19 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
 
       setAiLoading(true)
       try {
+        // Primary: Supabase Edge Function (works in production & local with Supabase)
+        const supabase = createClient()
+        const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
+          'categorize-transaction',
+          { body: { description: desc } }
+        )
+
+        if (!edgeError && edgeData?.category && edgeData.category !== 'Other') {
+          if (!userModifiedRef.current) applyAutoCategory(edgeData.category, 'ai')
+          return
+        }
+
+        // Fallback: Next.js API route (local dev without edge function)
         const res = await fetch('/api/categorize-transaction', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
