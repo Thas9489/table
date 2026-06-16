@@ -5,7 +5,6 @@ import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { FileUpload } from '@/components/ui/FileUpload'
 import { useCategories } from '@/hooks/useCategories'
-import { createClient } from '@/lib/supabase/client'
 import { detectCategoryFromKeywords } from '@/lib/categorize'
 import type { AutoCategorySource } from '@/lib/categorize'
 import type { Transaction } from '@/lib/supabase/types'
@@ -105,12 +104,16 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
 
       setAiLoading(true)
       try {
-        const supabase = createClient()
-        const { data, error } = await supabase.functions.invoke('categorize-transaction', {
-          body: { description: desc },
+        const res = await fetch('/api/categorize-transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: desc }),
         })
-        if (!error && data?.category && data.category !== 'Other') {
-          applyAutoCategory(data.category, 'ai')
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.category && data.category !== 'Other' && !userModifiedRef.current) {
+            applyAutoCategory(data.category, 'ai')
+          }
         }
       } catch {
         // Silently fall back — keyword-only mode
