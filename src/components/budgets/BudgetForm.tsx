@@ -60,7 +60,7 @@ export function BudgetForm({ initial, onSubmit, onCancel, showCategory = false }
         step="0.01"
         min="0"
         placeholder="0.00"
-        prefix={<span className="text-sm font-medium text-slate-500">$</span>}
+        prefix={<span className="text-sm font-medium" style={{ color: '#9B928B' }}>$</span>}
         value={form.amount}
         onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
         error={errors.amount}
@@ -69,8 +69,8 @@ export function BudgetForm({ initial, onSubmit, onCancel, showCategory = false }
       {/* Alert threshold */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-slate-700">Alert Threshold</label>
-          <span className="text-sm font-semibold text-indigo-600">{form.threshold}%</span>
+          <label className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Alert Threshold</label>
+          <span className="text-sm font-semibold" style={{ color: '#C4787C' }}>{form.threshold}%</span>
         </div>
         <input
           type="range"
@@ -79,14 +79,15 @@ export function BudgetForm({ initial, onSubmit, onCancel, showCategory = false }
           step="5"
           value={form.threshold}
           onChange={e => setForm(f => ({ ...f, threshold: e.target.value }))}
-          className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-indigo-600 bg-slate-200"
+          className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+          style={{ backgroundColor: '#E8E0D5' }}
         />
-        <div className="flex justify-between text-[11px] text-slate-400">
+        <div className="flex justify-between text-[11px]" style={{ color: '#9B928B' }}>
           <span>10%</span>
           <span>50%</span>
           <span>100%</span>
         </div>
-        {errors.threshold && <p className="text-xs text-red-500">{errors.threshold}</p>}
+        {errors.threshold && <p className="text-xs" style={{ color: '#D96B6B' }}>{errors.threshold}</p>}
       </div>
 
       <div className="flex gap-3 pt-1">

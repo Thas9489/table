@@ -9,32 +9,51 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', loading, children, disabled, ...props }, ref) => {
+  ({ className, variant = 'primary', size = 'md', loading, children, disabled, style, ...props }, ref) => {
     const base =
-      'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 ' +
+      'inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-150 ' +
       'disabled:opacity-50 disabled:cursor-not-allowed select-none focus-visible:outline-none ' +
       'focus-visible:ring-2 focus-visible:ring-offset-1'
 
-    const variants = {
-      primary:
-        'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-sm ' +
-        'focus-visible:ring-indigo-500',
-      secondary:
-        'bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm ' +
-        'focus-visible:ring-slate-300',
-      ghost:
-        'text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200 ' +
-        'focus-visible:ring-slate-300',
-      danger:
-        'bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-600 border border-red-200 ' +
-        'focus-visible:ring-red-400',
-      outline:
-        'border border-slate-300 text-slate-700 hover:bg-slate-50 active:bg-slate-100 ' +
-        'focus-visible:ring-slate-300',
+    // Variant styles using inline style for custom palette colors
+    const variantStyles: Record<string, React.CSSProperties> = {
+      primary: {
+        backgroundColor: '#E8B4B8',
+        color: '#1A1A1A',
+        boxShadow: '0 1px 2px rgba(232,180,184,0.3)',
+      },
+      secondary: {
+        backgroundColor: '#FAF8F5',
+        color: '#1A1A1A',
+        border: '1px solid #E8E0D5',
+        boxShadow: '0 1px 2px rgba(26,26,26,0.04)',
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+        color: '#6B6560',
+      },
+      danger: {
+        backgroundColor: '#FBF0F0',
+        color: '#D96B6B',
+        border: '1px solid #F5CECE',
+      },
+      outline: {
+        backgroundColor: 'transparent',
+        color: '#6B6560',
+        border: '1px solid #E8E0D5',
+      },
+    }
+
+    const variantClasses: Record<string, string> = {
+      primary:   'hover:opacity-90 active:opacity-80 focus-visible:ring-[#E8B4B8]',
+      secondary: 'hover:bg-[#F0EAE2] active:bg-[#EDE7DF] focus-visible:ring-[#E8E0D5]',
+      ghost:     'hover:bg-[#F0EAE2] hover:text-[#1A1A1A] active:bg-[#E8E0D5] focus-visible:ring-[#E8E0D5]',
+      danger:    'hover:bg-[#F5DADA] active:bg-[#F0CECE] focus-visible:ring-[#D96B6B]',
+      outline:   'hover:bg-[#F0EAE2] active:bg-[#E8E0D5] focus-visible:ring-[#E8E0D5]',
     }
 
     const sizes = {
-      sm: 'text-xs h-8 px-3 py-0',
+      sm: 'text-xs h-8 px-3.5 py-0',
       md: 'text-sm h-9 px-4 py-0',
       lg: 'text-sm h-10 px-5 py-0',
     }
@@ -42,7 +61,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(base, variants[variant], sizes[size], className)}
+        className={cn(base, variantClasses[variant], sizes[size], className)}
+        style={{ ...variantStyles[variant], ...style }}
         disabled={disabled || loading}
         {...props}
       >

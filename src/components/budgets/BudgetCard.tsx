@@ -27,38 +27,41 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
   const remaining = budget.amount - spent
 
   const barColor = isOver
-    ? '#dc2626'
+    ? '#D96B6B'
     : isAlert
-    ? '#d97706'
-    : cat?.color ?? '#6366f1'
+    ? '#D4956A'
+    : cat?.color ?? '#E8B4B8'
+
+  const borderColor = isOver ? '#F5CECE' : isAlert ? '#F5DCC8' : '#E8E0D5'
 
   return (
     <>
       <div
-        className={`bg-white rounded-xl p-5 shadow-sm border transition-shadow hover:shadow-md ${
-          isOver   ? 'border-red-200'
-          : isAlert ? 'border-amber-200'
-          : 'border-slate-200'
-        }`}
+        className="rounded-2xl p-5 transition-shadow hover:shadow-md"
+        style={{
+          backgroundColor: '#FAF8F5',
+          border: `1px solid ${borderColor}`,
+          boxShadow: '0 1px 3px rgba(26,26,26,0.05)',
+        }}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-              style={{ background: cat?.color ? `${cat.color}14` : '#f1f5f9' }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: cat?.color ? `${cat.color}18` : '#F0EAE2' }}
             >
               {isOver ? (
-                <AlertTriangle size={18} className="text-red-500" />
+                <AlertTriangle size={18} style={{ color: '#D96B6B' }} />
               ) : isAlert ? (
-                <AlertTriangle size={18} className="text-amber-500" />
+                <AlertTriangle size={18} style={{ color: '#D4956A' }} />
               ) : (
-                <CheckCircle  size={18} style={{ color: cat?.color ?? '#6366f1' }} />
+                <CheckCircle size={18} style={{ color: cat?.color ?? '#E8B4B8' }} />
               )}
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">{cat?.name ?? 'Budget'}</p>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>{cat?.name ?? 'Budget'}</p>
+              <p className="text-xs mt-0.5" style={{ color: '#9B928B' }}>
                 {formatCurrency(spent)} spent of {formatCurrency(budget.amount)}
               </p>
             </div>
@@ -67,14 +70,32 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
           <div className="flex items-center gap-1">
             <button
               onClick={() => setEditOpen(true)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all"
+              className="p-1.5 rounded-lg transition-all"
+              style={{ color: '#9B928B' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = '#F0EAE2'
+                ;(e.currentTarget as HTMLElement).style.color = '#1A1A1A'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+                ;(e.currentTarget as HTMLElement).style.color = '#9B928B'
+              }}
               title="Edit"
             >
               <Pencil size={13} />
             </button>
             <button
               onClick={() => onDelete(budget.id)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+              className="p-1.5 rounded-lg transition-all"
+              style={{ color: '#9B928B' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = '#FBF0F0'
+                ;(e.currentTarget as HTMLElement).style.color = '#D96B6B'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+                ;(e.currentTarget as HTMLElement).style.color = '#9B928B'
+              }}
               title="Delete"
             >
               <Trash2 size={13} />
@@ -94,7 +115,10 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
             <span className="text-xs font-medium" style={{ color: barColor }}>
               {pct.toFixed(0)}% used
             </span>
-            <span className={`text-xs ${remaining < 0 ? 'text-red-500 font-medium' : 'text-slate-400'}`}>
+            <span
+              className="text-xs"
+              style={{ color: remaining < 0 ? '#D96B6B' : '#9B928B', fontWeight: remaining < 0 ? 500 : 400 }}
+            >
               {remaining < 0
                 ? `${formatCurrency(Math.abs(remaining))} over budget`
                 : `${formatCurrency(remaining)} remaining`}
@@ -105,11 +129,12 @@ export function BudgetCard({ budget, transactions, onUpdate, onDelete }: BudgetC
         {/* Alert banner */}
         {isAlert && (
           <div
-            className={`mt-3 text-xs px-3 py-2 rounded-lg flex items-center gap-2 ${
+            className="mt-3 text-xs px-3 py-2 rounded-xl flex items-center gap-2"
+            style={
               isOver
-                ? 'bg-red-50 text-red-600 border border-red-100'
-                : 'bg-amber-50 text-amber-700 border border-amber-100'
-            }`}
+                ? { backgroundColor: '#FBF0F0', color: '#D96B6B', border: '1px solid #F5CECE' }
+                : { backgroundColor: '#FBF2EA', color: '#B87040', border: '1px solid #F0D8C0' }
+            }
           >
             <AlertTriangle size={12} className="flex-shrink-0" />
             {isOver

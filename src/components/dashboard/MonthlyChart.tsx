@@ -30,23 +30,23 @@ export function MonthlyChart({ transactions }: MonthlyChartProps) {
       <AreaChart data={days} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor="#059669" stopOpacity={0.15} />
-            <stop offset="95%" stopColor="#059669" stopOpacity={0} />
+            <stop offset="5%"  stopColor="#5BA68A" stopOpacity={0.18} />
+            <stop offset="95%" stopColor="#5BA68A" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor="#dc2626" stopOpacity={0.12} />
-            <stop offset="95%" stopColor="#dc2626" stopOpacity={0} />
+            <stop offset="5%"  stopColor="#D96B6B" stopOpacity={0.14} />
+            <stop offset="95%" stopColor="#D96B6B" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E8E0D5" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fill: '#94a3b8', fontSize: 11 }}
+          tick={{ fill: '#9B928B', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#94a3b8', fontSize: 11 }}
+          tick={{ fill: '#9B928B', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
           tickFormatter={v => `$${v}`}
@@ -58,19 +58,19 @@ export function MonthlyChart({ transactions }: MonthlyChartProps) {
             String(name).charAt(0).toUpperCase() + String(name).slice(1),
           ]}
           contentStyle={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '10px',
-            color: '#0f172a',
+            background: '#FAF8F5',
+            border: '1px solid #E8E0D5',
+            borderRadius: '12px',
+            color: '#1A1A1A',
             fontSize: '12px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            boxShadow: '0 4px 16px rgba(26,26,26,0.08)',
           }}
-          labelStyle={{ color: '#64748b', fontWeight: 500 }}
+          labelStyle={{ color: '#6B6560', fontWeight: 500 }}
         />
         <Area
           type="monotone"
           dataKey="income"
-          stroke="#059669"
+          stroke="#5BA68A"
           strokeWidth={2}
           fill="url(#incomeGrad)"
           dot={false}
@@ -78,7 +78,7 @@ export function MonthlyChart({ transactions }: MonthlyChartProps) {
         <Area
           type="monotone"
           dataKey="expense"
-          stroke="#dc2626"
+          stroke="#D96B6B"
           strokeWidth={2}
           fill="url(#expenseGrad)"
           dot={false}

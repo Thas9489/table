@@ -181,19 +181,20 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Type toggle */}
-      <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
+      <div className="flex gap-2 p-1 rounded-xl" style={{ backgroundColor: '#F0EAE2' }}>
         {(['expense', 'income'] as const).map(t => (
           <button
             key={t}
             type="button"
             onClick={() => setType(t)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all`}
+            style={
               type === t
                 ? t === 'expense'
-                  ? 'bg-white text-red-600 shadow-sm border border-red-100'
-                  : 'bg-white text-emerald-600 shadow-sm border border-emerald-100'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
+                  ? { backgroundColor: '#FAF8F5', color: '#D96B6B', border: '1px solid #F5CECE', boxShadow: '0 1px 2px rgba(26,26,26,0.06)' }
+                  : { backgroundColor: '#FAF8F5', color: '#5BA68A', border: '1px solid #C8E8DC', boxShadow: '0 1px 2px rgba(26,26,26,0.06)' }
+                : { color: '#9B928B' }
+            }
           >
             {t === 'expense' ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -244,15 +245,15 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
                 </>
               ) : autoSource === 'ai' ? (
                 <>
-                  <Sparkles size={11} className="text-indigo-500 shrink-0" />
-                  <span className="text-[11px] text-indigo-500">
+                  <Sparkles size={11} className="shrink-0" style={{ color: '#C4787C' }} />
+                  <span className="text-[11px]" style={{ color: '#C4787C' }}>
                     Category auto-selected by AI based on description.
                   </span>
                 </>
               ) : (
                 <>
-                  <Sparkles size={11} className="text-emerald-500 shrink-0" />
-                  <span className="text-[11px] text-slate-500">
+                  <Sparkles size={11} className="shrink-0" style={{ color: '#5BA68A' }} />
+                  <span className="text-[11px]" style={{ color: '#6B6560' }}>
                     Category auto-selected based on description.
                   </span>
                 </>
@@ -272,13 +273,22 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
 
       {/* Notes */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700 leading-none">Notes</label>
+        <label className="text-sm font-medium leading-none" style={{ color: '#1A1A1A' }}>Notes</label>
         <textarea
           placeholder="Additional notes…"
           value={form.notes}
           onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
           rows={2}
-          className="w-full bg-white border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 px-3.5 py-2.5 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-none"
+          className="w-full rounded-xl text-sm px-3.5 py-2.5 focus:outline-none transition-all resize-none"
+          style={{ backgroundColor: '#FAF8F5', border: '1px solid #E8E0D5', color: '#1A1A1A' }}
+          onFocus={e => {
+            e.currentTarget.style.borderColor = '#E8B4B8'
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,180,184,0.18)'
+          }}
+          onBlur={e => {
+            e.currentTarget.style.borderColor = '#E8E0D5'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
         />
       </div>
 

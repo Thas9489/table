@@ -9,11 +9,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title, subtitle }: AppLayoutProps) {
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#f8fafc', colorScheme: 'light' }}>
-      {/* Sidebar */}
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#F5F0E8', colorScheme: 'light' }}>
       <Sidebar />
-
-      {/* Main content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header title={title} subtitle={subtitle} />
         <div className="flex-1 overflow-y-auto p-6">

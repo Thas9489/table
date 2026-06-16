@@ -21,6 +21,12 @@ const YEARS = Array.from({ length: 5 }, (_, i) => {
   return { value: String(y), label: String(y) }
 })
 
+const CARD_STYLE = {
+  backgroundColor: '#FAF8F5',
+  border: '1px solid #E8E0D5',
+  boxShadow: '0 1px 3px rgba(26,26,26,0.05)',
+}
+
 export default function BudgetsPage() {
   const { month: curMonth, year: curYear } = getCurrentMonth()
   const [month,   setMonth]   = useState(curMonth)
@@ -47,34 +53,40 @@ export default function BudgetsPage() {
     <AppLayout title="Budgets" subtitle={`${getMonthName(month)} ${year}`}>
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <DollarSign size={14} className="text-indigo-600" />
+        <div className="rounded-2xl px-5 py-4" style={CARD_STYLE}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#F7E8E9' }}>
+              <DollarSign size={14} style={{ color: '#C4787C' }} />
             </div>
-            <p className="text-xs text-slate-500 font-medium">Total Budgeted</p>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Total Budgeted</p>
           </div>
-          <p className="text-xl font-bold text-slate-900">{formatCurrency(totalBudgeted)}</p>
+          <p className="text-xl font-bold" style={{ color: '#1A1A1A' }}>{formatCurrency(totalBudgeted)}</p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm">
-          <div className="flex items-center gap-3 mb-1">
-            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${totalSpent > totalBudgeted ? 'bg-red-50' : 'bg-slate-100'}`}>
-              <PiggyBank size={14} className={totalSpent > totalBudgeted ? 'text-red-500' : 'text-slate-400'} />
+        <div className="rounded-2xl px-5 py-4" style={CARD_STYLE}>
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: totalSpent > totalBudgeted ? '#FBF0F0' : '#F0EAE2' }}
+            >
+              <PiggyBank size={14} style={{ color: totalSpent > totalBudgeted ? '#D96B6B' : '#9B928B' }} />
             </div>
-            <p className="text-xs text-slate-500 font-medium">Total Spent</p>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Total Spent</p>
           </div>
-          <p className={`text-xl font-bold ${totalSpent > totalBudgeted ? 'text-red-600' : 'text-slate-900'}`}>
+          <p className="text-xl font-bold" style={{ color: totalSpent > totalBudgeted ? '#D96B6B' : '#1A1A1A' }}>
             {formatCurrency(totalSpent)}
           </p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm">
-          <div className="flex items-center gap-3 mb-1">
-            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${alertCount > 0 ? 'bg-amber-50' : 'bg-slate-100'}`}>
-              <AlertTriangle size={14} className={alertCount > 0 ? 'text-amber-500' : 'text-slate-400'} />
+        <div className="rounded-2xl px-5 py-4" style={CARD_STYLE}>
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: alertCount > 0 ? '#FBF2EA' : '#F0EAE2' }}
+            >
+              <AlertTriangle size={14} style={{ color: alertCount > 0 ? '#D4956A' : '#9B928B' }} />
             </div>
-            <p className="text-xs text-slate-500 font-medium">Budget Alerts</p>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Budget Alerts</p>
           </div>
-          <p className={`text-xl font-bold ${alertCount > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+          <p className="text-xl font-bold" style={{ color: alertCount > 0 ? '#D4956A' : '#1A1A1A' }}>
             {alertCount}
           </p>
         </div>
@@ -97,13 +109,16 @@ export default function BudgetsPage() {
 
       {/* Budget grid */}
       {loading ? (
-        <div className="p-10 text-center text-slate-400 text-sm">Loading budgets…</div>
+        <div className="p-10 text-center text-sm" style={{ color: '#9B928B' }}>Loading budgets…</div>
       ) : budgets.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-16 text-center shadow-sm">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
-            <PiggyBank size={22} className="text-slate-300" />
+        <div className="rounded-2xl p-16 text-center" style={CARD_STYLE}>
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: '#F0EAE2', border: '1px solid #E8E0D5' }}
+          >
+            <PiggyBank size={22} style={{ color: '#D4C8BC' }} />
           </div>
-          <p className="text-slate-400 text-sm mb-4">No budgets set for this month</p>
+          <p className="text-sm mb-4" style={{ color: '#9B928B' }}>No budgets set for this month</p>
           <Button size="sm" onClick={() => setAddOpen(true)}>
             <Plus size={14} /> Create Your First Budget
           </Button>
@@ -127,17 +142,18 @@ export default function BudgetsPage() {
       {/* Add budget modal */}
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Set Budget" size="sm">
         <div className="mb-5">
-          <label className="text-sm font-medium text-slate-700 block mb-1.5">Category</label>
+          <label className="text-sm font-medium block mb-1.5" style={{ color: '#1A1A1A' }}>Category</label>
           <div className="relative">
             <select
               id="budget-cat-select"
-              className="w-full appearance-none bg-white border border-slate-300 rounded-lg text-sm text-slate-900 px-3.5 py-2 h-10 pr-9 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+              className="w-full appearance-none rounded-xl text-sm px-3.5 py-2 h-10 pr-9 focus:outline-none transition-all"
+              style={{ backgroundColor: '#FAF8F5', border: '1px solid #E8E0D5', color: '#1A1A1A' }}
             >
               {availableCategories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
-            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: '#9B928B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </div>

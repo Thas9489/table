@@ -15,7 +15,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-sm font-medium text-slate-700 leading-none">
+          <label className="text-sm font-medium leading-none" style={{ color: '#1A1A1A' }}>
             {label}
           </label>
         )}
@@ -23,20 +23,31 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             className={cn(
-              'w-full appearance-none bg-white border border-slate-300 rounded-lg',
-              'text-sm text-slate-900 px-3.5 py-2 h-10 pr-9',
-              'focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100',
+              'w-full appearance-none rounded-xl text-sm px-3.5 py-2 h-10 pr-9',
               'transition-all duration-150',
-              'disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed',
-              error && 'border-red-400 focus:border-red-500 focus:ring-red-100',
+              'focus:outline-none',
+              'disabled:cursor-not-allowed',
               className
             )}
+            style={{
+              backgroundColor: '#FAF8F5',
+              border: `1px solid ${error ? '#D96B6B' : '#E8E0D5'}`,
+              color: '#1A1A1A',
+            }}
+            onFocus={e => {
+              e.currentTarget.style.borderColor = error ? '#D96B6B' : '#E8B4B8'
+              e.currentTarget.style.boxShadow = error
+                ? '0 0 0 3px rgba(217,107,107,0.12)'
+                : '0 0 0 3px rgba(232,180,184,0.18)'
+            }}
+            onBlur={e => {
+              e.currentTarget.style.borderColor = error ? '#D96B6B' : '#E8E0D5'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
             {...props}
           >
             {placeholder && (
-              <option value="" className="text-slate-400">
-                {placeholder}
-              </option>
+              <option value="">{placeholder}</option>
             )}
             {options.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -45,11 +56,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <ChevronDown
-            size={15}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+            size={14}
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ color: '#9B928B' }}
           />
         </div>
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs" style={{ color: '#D96B6B' }}>{error}</p>}
       </div>
     )
   }

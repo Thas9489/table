@@ -3,14 +3,14 @@ import './globals.css'
 import { AuthProvider } from '@/components/providers/AuthProvider'
 
 export const metadata: Metadata = {
-  title: 'Budget Tracker — Smart Finance',
+  title: 'BudgetAI — Smart Finance',
   description: 'Premium personal finance and budget tracking app',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full" style={{ colorScheme: 'light', backgroundColor: '#f8fafc' }}>
-      <body className="h-full bg-slate-50">
+    <html lang="en" className="h-full" style={{ colorScheme: 'light', backgroundColor: '#F5F0E8' }}>
+      <body className="h-full" style={{ backgroundColor: '#F5F0E8' }}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

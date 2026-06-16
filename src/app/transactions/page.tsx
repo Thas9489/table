@@ -20,6 +20,12 @@ const YEARS = Array.from({ length: 5 }, (_, i) => {
   return { value: String(y), label: String(y) }
 })
 
+const CARD_STYLE = {
+  backgroundColor: '#FAF8F5',
+  border: '1px solid #E8E0D5',
+  boxShadow: '0 1px 3px rgba(26,26,26,0.05)',
+}
+
 export default function TransactionsPage() {
   const now = new Date()
   const [month,      setMonth]      = useState(now.getMonth() + 1)
@@ -48,31 +54,34 @@ export default function TransactionsPage() {
     <AppLayout title="Transactions" subtitle={`${getMonthName(month)} ${year}`}>
       {/* Summary bar */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center gap-4">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <TrendingUp size={16} className="text-emerald-600" />
+        <div className="rounded-2xl px-5 py-4 flex items-center gap-4" style={CARD_STYLE}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#EBF5F1' }}>
+            <TrendingUp size={16} style={{ color: '#5BA68A' }} />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Income</p>
-            <p className="text-base font-bold text-emerald-600">{formatCurrency(totalIncome)}</p>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Total Income</p>
+            <p className="text-base font-bold" style={{ color: '#5BA68A' }}>{formatCurrency(totalIncome)}</p>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center gap-4">
-          <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-            <TrendingDown size={16} className="text-red-500" />
+        <div className="rounded-2xl px-5 py-4 flex items-center gap-4" style={CARD_STYLE}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FBF0F0' }}>
+            <TrendingDown size={16} style={{ color: '#D96B6B' }} />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Expenses</p>
-            <p className="text-base font-bold text-red-600">{formatCurrency(totalExpense)}</p>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Total Expenses</p>
+            <p className="text-base font-bold" style={{ color: '#D96B6B' }}>{formatCurrency(totalExpense)}</p>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${net >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
-            <TrendingUp size={16} className={net >= 0 ? 'text-emerald-600' : 'text-red-500'} />
+        <div className="rounded-2xl px-5 py-4 flex items-center gap-4" style={CARD_STYLE}>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ backgroundColor: net >= 0 ? '#EBF5F1' : '#FBF0F0' }}
+          >
+            <TrendingUp size={16} style={{ color: net >= 0 ? '#5BA68A' : '#D96B6B' }} />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Net</p>
-            <p className={`text-base font-bold ${net >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+            <p className="text-xs font-medium" style={{ color: '#9B928B' }}>Net</p>
+            <p className="text-base font-bold" style={{ color: net >= 0 ? '#5BA68A' : '#D96B6B' }}>
               {formatCurrency(net)}
             </p>
           </div>
@@ -81,7 +90,7 @@ export default function TransactionsPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-4">
-        <Filter size={14} className="text-slate-400 flex-shrink-0" />
+        <Filter size={14} style={{ color: '#9B928B' }} className="flex-shrink-0" />
 
         {/* Type pills */}
         <div className="flex gap-1.5">
@@ -89,11 +98,12 @@ export default function TransactionsPage() {
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+              className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+              style={
                 typeFilter === t
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-              }`}
+                  ? { backgroundColor: '#E8B4B8', color: '#1A1A1A', border: '1px solid #E8B4B8' }
+                  : { backgroundColor: '#FAF8F5', color: '#6B6560', border: '1px solid #E8E0D5' }
+              }
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
@@ -118,31 +128,35 @@ export default function TransactionsPage() {
       </div>
 
       {/* Transaction list */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="divide-y divide-slate-100">
-          {loading ? (
-            <div className="p-10 text-center text-slate-400 text-sm">Loading…</div>
-          ) : transactions.length === 0 ? (
-            <div className="p-16 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
-                <TrendingUp size={22} className="text-slate-300" />
-              </div>
-              <p className="text-slate-400 text-sm mb-4">No transactions found</p>
-              <Button size="sm" onClick={() => setAddOpen(true)}>
-                <Plus size={14} /> Add Transaction
-              </Button>
+      <div className="rounded-2xl overflow-hidden" style={CARD_STYLE}>
+        {loading ? (
+          <div className="p-10 text-center text-sm" style={{ color: '#9B928B' }}>Loading…</div>
+        ) : transactions.length === 0 ? (
+          <div className="p-16 text-center">
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ backgroundColor: '#F0EAE2', border: '1px solid #E8E0D5' }}
+            >
+              <TrendingUp size={22} style={{ color: '#D4C8BC' }} />
             </div>
-          ) : (
-            transactions.map(tx => (
-              <TransactionCard
-                key={tx.id}
-                transaction={tx}
-                onUpdate={async (id, data) => { await updateTransaction(id, data) }}
-                onDelete={async (id) => { await deleteTransaction(id) }}
-              />
-            ))
-          )}
-        </div>
+            <p className="text-sm mb-4" style={{ color: '#9B928B' }}>No transactions found</p>
+            <Button size="sm" onClick={() => setAddOpen(true)}>
+              <Plus size={14} /> Add Transaction
+            </Button>
+          </div>
+        ) : (
+          <>
+            {transactions.map((tx, i) => (
+              <div key={tx.id} style={i > 0 ? { borderTop: '1px solid #F0EAE2' } : {}}>
+                <TransactionCard
+                  transaction={tx}
+                  onUpdate={async (id, data) => { await updateTransaction(id, data) }}
+                  onDelete={async (id) => { await deleteTransaction(id) }}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Transaction">

@@ -8,7 +8,7 @@ import {
   PiggyBank,
   Tag,
   TrendingUp,
-  Wallet,
+  Sparkles,
 } from 'lucide-react'
 
 const nav = [
@@ -23,23 +23,32 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 flex-shrink-0 flex flex-col h-full border-r border-slate-200" style={{ backgroundColor: '#ffffff', color: '#0f172a' }}>
+    <aside
+      className="w-60 flex-shrink-0 flex flex-col h-full"
+      style={{ backgroundColor: '#FAF8F5', borderRight: '1px solid #E8E0D5', color: '#1A1A1A' }}
+    >
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-slate-100">
+      <div className="px-5 py-5" style={{ borderBottom: '1px solid #E8E0D5' }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
-            <Wallet size={15} className="text-white" />
+          <div
+            className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #E8B4B8 0%, #D9A0A4 100%)' }}
+          >
+            <Sparkles size={16} style={{ color: '#FAF8F5' }} />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-900 leading-none">BudgetAI</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Smart Finance</p>
+            <p className="text-sm font-bold leading-none" style={{ color: '#1A1A1A' }}>BudgetAI</p>
+            <p className="text-[11px] mt-0.5" style={{ color: '#9B928B' }}>Smart Finance</p>
           </div>
         </div>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <p className="px-3 mb-2 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+        <p
+          className="px-3 mb-2.5 text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: '#9B928B' }}
+        >
           Main Menu
         </p>
         <div className="space-y-0.5">
@@ -50,15 +59,29 @@ export function Sidebar() {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
-                  active
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150'
                 )}
+                style={
+                  active
+                    ? { backgroundColor: '#F7E8E9', color: '#8B4A4E' }
+                    : { color: '#6B6560' }
+                }
+                onMouseEnter={e => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = '#F0EAE2'
+                    ;(e.currentTarget as HTMLElement).style.color = '#1A1A1A'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+                    ;(e.currentTarget as HTMLElement).style.color = '#6B6560'
+                  }
+                }}
               >
                 <Icon
                   size={17}
-                  className={active ? 'text-indigo-600' : 'text-slate-400'}
+                  style={{ color: active ? '#C4787C' : '#9B928B' }}
                 />
                 {label}
               </Link>
@@ -69,14 +92,20 @@ export function Sidebar() {
 
       {/* Bottom tip */}
       <div className="px-3 pb-4">
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <div
+          className="rounded-2xl p-4"
+          style={{ backgroundColor: '#F5F0E8', border: '1px solid #E8E0D5' }}
+        >
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="w-5 h-5 rounded-lg bg-indigo-100 flex items-center justify-center">
-              <TrendingUp size={11} className="text-indigo-600" />
+            <div
+              className="w-5 h-5 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: '#F7E8E9' }}
+            >
+              <TrendingUp size={11} style={{ color: '#C4787C' }} />
             </div>
-            <p className="text-xs font-semibold text-slate-700">Pro Tip</p>
+            <p className="text-xs font-semibold" style={{ color: '#1A1A1A' }}>Pro Tip</p>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
+          <p className="text-[11px] leading-relaxed" style={{ color: '#6B6560' }}>
             Set budget alerts to stay on track with your financial goals.
           </p>
         </div>
