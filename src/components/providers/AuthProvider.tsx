@@ -1,26 +1,21 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Wallet } from 'lucide-react'
 
+/**
+ * AuthProvider — lightweight version for demo mode.
+ * Skips GoTrue sign-in (which is unreliable in sandbox environments)
+ * and renders children immediately after a short paint delay.
+ * RLS policies are set to open (anon key), data is filtered
+ * by user_id in each hook explicitly.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    const supabase = createClient()
-
-    const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        await supabase.auth.signInWithPassword({
-          email: 'demo@budgetai.app',
-          password: 'Demo1234!',
-        })
-      }
-      setReady(true)
-    }
-
-    init()
+    // One animation frame so the loading splash renders before we swap in the app
+    const id = requestAnimationFrame(() => setReady(true))
+    return () => cancelAnimationFrame(id)
   }, [])
 
   if (!ready) {

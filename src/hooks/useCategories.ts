@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Category } from '@/lib/supabase/types'
 
+const DEMO_USER_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
+
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,12 +26,11 @@ export function useCategories() {
 
   const addCategory = async (cat: Pick<Category, 'name' | 'icon' | 'color'>) => {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from('categories').insert({
       ...cat,
       is_default: false,
-      user_id: user?.id ?? 'anonymous',
+      user_id: DEMO_USER_ID,
     })
     if (!error) fetch()
     return error

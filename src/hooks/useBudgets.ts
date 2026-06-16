@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Budget } from '@/lib/supabase/types'
 
+const DEMO_USER_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
+
 export function useBudgets(month: number, year: number) {
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [loading, setLoading] = useState(true)
@@ -14,6 +16,7 @@ export function useBudgets(month: number, year: number) {
     const { data } = await (supabase as any)
       .from('budgets')
       .select('*, categories(*)')
+      .eq('user_id', DEMO_USER_ID)
       .eq('month', month)
       .eq('year', year)
     setBudgets((data as Budget[]) ?? [])
@@ -28,10 +31,9 @@ export function useBudgets(month: number, year: number) {
     alert_threshold: number = 80
   ) => {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from('budgets').upsert(
-      { user_id: user?.id ?? 'anonymous', category_id, month, year, amount, alert_threshold },
+      { user_id: DEMO_USER_ID, category_id, month, year, amount, alert_threshold },
       { onConflict: 'user_id,category_id,month,year' }
     )
     if (!error) fetch()
@@ -41,7 +43,7 @@ export function useBudgets(month: number, year: number) {
   const deleteBudget = async (id: string): Promise<void> => {
     const supabase = createClient()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from('budgets').delete().eq('id', id)
+    await (supabase as any).from('budgets').delete().eq('id', id).eq('user_id', DEMO_USER_ID)
     fetch()
   }
 

@@ -3,6 +3,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Transaction } from '@/lib/supabase/types'
 
+// Demo user — data is scoped to this ID without requiring GoTrue auth
+const DEMO_USER_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
+
 export function useTransactions(filters?: {
   month?: number
   year?: number
@@ -22,6 +25,7 @@ export function useTransactions(filters?: {
     let query: any = supabase
       .from('transactions')
       .select('*, categories(*)')
+      .eq('user_id', DEMO_USER_ID)
       .order('date', { ascending: false })
       .order('created_at', { ascending: false })
 
@@ -45,11 +49,10 @@ export function useTransactions(filters?: {
 
   const addTransaction = async (tx: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'categories'>) => {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: err } = await (supabase as any)
       .from('transactions')
-      .insert({ ...tx, user_id: user?.id ?? 'anonymous' })
+      .insert({ ...tx, user_id: DEMO_USER_ID })
     if (!err) fetch()
     return err
   }
@@ -61,6 +64,7 @@ export function useTransactions(filters?: {
       .from('transactions')
       .update(updates)
       .eq('id', id)
+      .eq('user_id', DEMO_USER_ID)
     if (!err) fetch()
     return err
   }
@@ -72,6 +76,7 @@ export function useTransactions(filters?: {
       .from('transactions')
       .delete()
       .eq('id', id)
+      .eq('user_id', DEMO_USER_ID)
     if (!err) fetch()
     return err
   }
