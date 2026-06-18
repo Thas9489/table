@@ -1,64 +1,37 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Edge-compatible auth check: look for the Supabase session cookie.
+// Supabase SSR stores the JWT in a cookie named  sb-<project-ref>-auth-token
+// We don't need to validate the JWT here — Supabase RLS enforces real security
+// server-side. This proxy only handles UI redirects.
+function hasSession(request: NextRequest): boolean {
+  return request.cookies.getAll().some(
+    ({ name, value }) =>
+      name.includes('-auth-token') && value.length > 20
+  )
+}
+
 export async function proxy(request: NextRequest) {
-  // Guard: if env vars are not configured (e.g. on a fresh Vercel deploy
-  // before env vars are set), allow the request through rather than crashing.
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    return NextResponse.next({ request })
+  const { pathname } = request.nextUrl
+  const isAuthPage = pathname === '/login' || pathname === '/register'
+  const authenticated = hasSession(request)
+
+  // Unauthenticated user trying to access a protected page → /login
+  if (!authenticated && !isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
-  let supabaseResponse = NextResponse.next({ request })
-
-  try {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-            supabaseResponse = NextResponse.next({ request })
-            cookiesToSet.forEach(({ name, value, options }) =>
-              supabaseResponse.cookies.set(name, value, options)
-            )
-          },
-        },
-      }
-    )
-
-    // Refresh session — do NOT remove this
-    const { data: { user } } = await supabase.auth.getUser()
-
-    const { pathname } = request.nextUrl
-    const isAuthPage = pathname === '/login' || pathname === '/register'
-
-    // Unauthenticated → redirect to /login
-    if (!user && !isAuthPage) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      return NextResponse.redirect(url)
-    }
-
-    // Authenticated + on auth page → redirect to dashboard
-    if (user && isAuthPage) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/'
-      return NextResponse.redirect(url)
-    }
-  } catch {
-    // If Supabase call fails for any reason, fail open — don't block the request
-    return NextResponse.next({ request })
+  // Authenticated user landing on login/register → dashboard
+  if (authenticated && isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
   }
 
-  return supabaseResponse
+  return NextResponse.next({ request })
 }
 
 export const config = {
