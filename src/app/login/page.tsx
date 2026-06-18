@@ -1,12 +1,10 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Sparkles, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
-  const router   = useRouter()
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [loading,  setLoading]  = useState(false)
@@ -17,15 +15,20 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    const supabase = createClient()
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+    try {
+      const supabase = createClient()
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (err) {
-      setError(err.message)
+      if (err) {
+        setError(err.message)
+        setLoading(false)
+      } else {
+        // Full page reload so the proxy sees the new auth cookie immediately
+        window.location.href = '/'
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
       setLoading(false)
-    } else {
-      router.push('/')
-      router.refresh()
     }
   }
 

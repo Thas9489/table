@@ -1,12 +1,10 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Sparkles, Mail, Lock, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
 
 export default function RegisterPage() {
-  const router   = useRouter()
   const [email,    setEmail]           = useState('')
   const [password, setPassword]        = useState('')
   const [confirm,  setConfirm]         = useState('')
@@ -28,25 +26,30 @@ export default function RegisterPage() {
     }
 
     setLoading(true)
-    const supabase = createClient()
-    const { data, error: err } = await supabase.auth.signUp({ email, password })
+    try {
+      const supabase = createClient()
+      const { data, error: err } = await supabase.auth.signUp({ email, password })
 
-    if (err) {
-      setError(err.message)
+      if (err) {
+        setError(err.message)
+        setLoading(false)
+        return
+      }
+
+      // If session is present → auto-confirmed, redirect immediately
+      if (data.session) {
+        // Full page reload so the proxy sees the new auth cookie immediately
+        window.location.href = '/'
+        return
+      }
+
+      // Otherwise → email confirmation required
+      setSuccess(true)
       setLoading(false)
-      return
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+      setLoading(false)
     }
-
-    // If session is present → auto-confirmed, redirect immediately
-    if (data.session) {
-      router.push('/')
-      router.refresh()
-      return
-    }
-
-    // Otherwise → email confirmation required
-    setSuccess(true)
-    setLoading(false)
   }
 
   if (success) {
