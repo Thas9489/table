@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
-const DEMO_USER_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
-// Sample seed data — category names matched to DB at runtime
 const SEED_TRANSACTIONS = [
   { description: 'Monthly Salary',        type: 'income',  amount: 3500.00, categoryName: 'Income',         date: '2026-06-01' },
   { description: 'Grocery Shopping',      type: 'expense', amount: 85.50,   categoryName: 'Food',           date: '2026-06-03' },
@@ -19,28 +16,33 @@ const SEED_TRANSACTIONS = [
 
 export async function POST() {
   try {
-    // Use client-side Supabase (anon key, RLS is open)
-    const supabase = createClient()
+    const supabase = await createServerSupabaseClient()
 
-    // Check if demo user already has transactions — avoid re-seeding
+    // Get authenticated user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const userId = user.id
+
+    // Avoid re-seeding if user already has transactions
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing } = await (supabase as any)
       .from('transactions')
       .select('id')
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', userId)
       .limit(1)
 
     if (existing && existing.length > 0) {
       return NextResponse.json({ message: 'Already seeded', count: 0 })
     }
 
-    // Fetch all categories so we can map by name
+    // Fetch all categories to map by name
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: categories } = await (supabase as any)
       .from('categories')
       .select('id, name')
 
-    // Build a case-insensitive name → id map
     const catMap = new Map<string, string>()
     if (categories) {
       for (const cat of categories) {
@@ -48,15 +50,14 @@ export async function POST() {
       }
     }
 
-    // Resolve category IDs
     const rows = SEED_TRANSACTIONS.map(tx => ({
-      user_id:     DEMO_USER_ID,
-      type:        tx.type,
-      amount:      tx.amount,
-      description: tx.description,
-      date:        tx.date,
-      category_id: catMap.get(tx.categoryName.toLowerCase()) ?? null,
-      notes:       null,
+      user_id:         userId,
+      type:            tx.type,
+      amount:          tx.amount,
+      description:     tx.description,
+      date:            tx.date,
+      category_id:     catMap.get(tx.categoryName.toLowerCase()) ?? null,
+      notes:           null,
       attachment_url:  null,
       attachment_name: null,
       attachment_type: null,

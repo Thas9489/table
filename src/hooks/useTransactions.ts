@@ -3,9 +3,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Transaction } from '@/lib/supabase/types'
 
-// Demo user — data is scoped to this ID without requiring GoTrue auth
-const DEMO_USER_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
 export function useTransactions(filters?: {
   month?: number
   year?: number
@@ -21,11 +18,16 @@ export function useTransactions(filters?: {
     setError(null)
     const supabase = createClient()
 
+    // Get current user from session
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+    if (!userId) { setLoading(false); setTransactions([]); return }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let query: any = supabase
       .from('transactions')
       .select('*, categories(*)')
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', userId)
       .order('date', { ascending: false })
       .order('created_at', { ascending: false })
 
@@ -49,36 +51,47 @@ export function useTransactions(filters?: {
 
   const addTransaction = async (tx: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'categories'>) => {
     const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+    if (!userId) return new Error('Not authenticated')
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: err } = await (supabase as any)
       .from('transactions')
-      .insert({ ...tx, user_id: DEMO_USER_ID })
+      .insert({ ...tx, user_id: userId })
     if (!err) fetch()
     return err
   }
 
   const updateTransaction = async (id: string, updates: Partial<Transaction>) => {
     const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+    if (!userId) return new Error('Not authenticated')
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: err } = await (supabase as any)
       .from('transactions')
       .update(updates)
       .eq('id', id)
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', userId)
     if (!err) fetch()
     return err
   }
 
   const deleteTransaction = async (id: string) => {
     const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+    if (!userId) return
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: err } = await (supabase as any)
+    await (supabase as any)
       .from('transactions')
       .delete()
       .eq('id', id)
-      .eq('user_id', DEMO_USER_ID)
-    if (!err) fetch()
-    return err
+      .eq('user_id', userId)
+    fetch()
   }
 
   const totalIncome = transactions
