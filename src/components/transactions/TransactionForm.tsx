@@ -222,12 +222,12 @@ export function TransactionForm({ initial, onSubmit, onCancel }: TransactionForm
             border: `1.5px solid ${errors.amount ? '#D96B6B' : '#E8E0D5'}`,
           }}
         >
-          <span className="pl-4 text-[16px] font-medium flex-shrink-0" style={{ color: '#9B928B' }}>$</span>
+          <span className="pl-4 text-[13px] font-semibold flex-shrink-0" style={{ color: '#9B928B' }}>KWD</span>
           <input
             type="number"
-            step="0.01"
+            step="0.001"
             min="0"
-            placeholder="0.00"
+            placeholder="0.000"
             value={form.amount}
             onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
             className="flex-1 text-[20px] font-semibold px-2 py-3 focus:outline-none bg-transparent min-w-0"
