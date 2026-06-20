@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { SpendingChart } from '@/components/dashboard/SpendingChart'
@@ -29,21 +29,9 @@ export default function Dashboard() {
     addTransaction,
     updateTransaction,
     deleteTransaction,
-    refresh,
   } = useTransactions({ month, year })
 
   const [addOpen, setAddOpen] = useState(false)
-  const seededRef = useRef(false)
-
-  // Auto-seed 10 sample transactions if DB is empty
-  useEffect(() => {
-    if (!loading && transactions.length === 0 && !seededRef.current) {
-      seededRef.current = true
-      fetch('/api/seed', { method: 'POST' })
-        .then(r => r.ok ? refresh() : null)
-        .catch(() => null)
-    }
-  }, [loading, transactions.length, refresh])
 
   return (
     <AppLayout
