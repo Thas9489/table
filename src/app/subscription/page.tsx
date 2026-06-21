@@ -277,7 +277,16 @@ export default function SubscriptionPage() {
         },
       })
 
-      if (error) throw new Error(error.message)
+      if (error) {
+        // Extract actual error body from the edge function response
+        let msg = error.message
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const body = await (error as any).context?.json?.()
+          if (body?.error) msg = body.error
+        } catch { /* fall back to generic message */ }
+        throw new Error(msg)
+      }
       if (!data?.paymentUrl) throw new Error('No payment URL returned')
 
       // Redirect immediately to the MyFatoorah hosted payment page
