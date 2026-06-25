@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { mfInitiatePayment } from '@/lib/myfatoorah'
+import { checkOrigin } from '@/lib/csrf'
 
 function genInvoiceNumber(): string {
   const d = new Date()
@@ -10,6 +11,8 @@ function genInvoiceNumber(): string {
 }
 
 export async function POST(request: NextRequest) {
+  const originErr = checkOrigin(request)
+  if (originErr) return originErr
   try {
     const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()

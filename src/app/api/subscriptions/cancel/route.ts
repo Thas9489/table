@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { checkOrigin } from '@/lib/csrf'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const originErr = checkOrigin(request)
+  if (originErr) return originErr
   try {
     const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
