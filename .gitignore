@@ -41,7 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # Claude Code / tooling
-.claude/
+# .claude/ — keep skills and project config in version control
 
 # Supabase temp files
 supabase/.temp/
