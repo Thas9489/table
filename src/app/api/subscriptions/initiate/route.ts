@@ -72,6 +72,6 @@ export async function POST(request: NextRequest) {
       methods: mfData.PaymentMethods,
     })
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 })
+    console.error(e); return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }

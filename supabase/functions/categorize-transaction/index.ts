@@ -3,10 +3,17 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY')
 const MODEL = 'openai/gpt-oss-120b:free'
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+function corsHeaders(req: Request) {
+  const origin = req.headers.get('origin') ?? ''
+  const allowed =
+    origin === 'http://localhost:3000' ||
+    origin.endsWith('.vercel.app') ||
+    origin === (Deno.env.get('APP_URL') ?? '')
+  return {
+    'Access-Control-Allow-Origin': allowed ? origin : 'null',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  }
 }
 
 /** Category names matching DB values exactly (case-sensitive). */
@@ -23,6 +30,8 @@ const CATEGORIES = [
 ]
 
 Deno.serve(async (req: Request) => {
+  const CORS = corsHeaders(req)
+
   // CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: CORS })
@@ -38,13 +47,13 @@ Deno.serve(async (req: Request) => {
 
     // Guard: too short to classify
     if (description.length < 2) {
-      return json({ category: 'Other', source: 'default' })
+      return json({ category: 'Other', source: 'default' }, 200, CORS)
     }
 
     // Guard: API key not configured
     if (!OPENROUTER_API_KEY) {
       console.error('OPENROUTER_API_KEY secret is not set')
-      return json({ category: 'Other', source: 'error', error: 'API key not configured' }, 500)
+      return json({ category: 'Other', source: 'error' }, 500, CORS)
     }
 
     const systemPrompt =
@@ -89,16 +98,16 @@ Deno.serve(async (req: Request) => {
 
     console.log(`[categorize] "${description}" => "${matched}" (raw: "${raw}")`)
 
-    return json({ category: matched, source: 'ai', model: MODEL })
+    return json({ category: matched, source: 'ai', model: MODEL }, 200, CORS)
   } catch (err) {
     console.error('[categorize] Error:', err)
-    return json({ category: 'Other', source: 'error', error: String(err) }, 500)
+    return json({ category: 'Other', source: 'error' }, 500, CORS)
   }
 })
 
-function json(data: unknown, status = 200) {
+function json(data: unknown, status = 200, cors: Record<string, string> = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
+    headers: { 'Content-Type': 'application/json', ...cors },
   })
 }

@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       status: newStatus,
       myfatoorah_payment_id: paymentId,
       payment_method: mfStatus.PaymentGateway,
-      raw_response: mfStatus,
+      // Store only non-sensitive fields, not the full raw gateway response
       error_message: isPaid ? null : `Payment ${mfStatus.InvoiceStatus}`,
       updated_at: now,
     }).eq('id', transactionId)
